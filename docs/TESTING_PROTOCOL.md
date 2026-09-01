@@ -45,13 +45,13 @@ flat battery.
 
 ## 3. Detection calibration (bench, 1-2 h)
 
-The camera thresholds in `firmware/cam_node/src/config.h` are in units of the
+The camera thresholds in the `config.h` tab of the `PestTrapCamera` sketch are in units of the
 80x60 working grid and depend entirely on camera-to-target distance. They must
 be set on the assembled prototype, at the real mounting geometry.
 
 1. Mount the camera at its final position: looking **across** the UV array's
    face, 15-25 cm from the intake, never into the array.
-2. Set `CAM_WIFI_DIAGNOSTICS 1` in the camera node's `config.h`, flash, and
+2. Set `CAM_WIFI_DIAGNOSTICS 1` in the camera sketch's `config.h` tab, flash, and
    open `http://<cam-ip>/pgm` to check framing and focus. The OV2640's lens is
    a screw thread - focus it at the intake plane.
 3. Place specimens (or, for a first pass, paper cut-outs of realistic size) in

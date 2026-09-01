@@ -1,6 +1,10 @@
 #pragma once
-// Copy to secrets.h and fill in. secrets.h is gitignored - never commit
-// credentials to the repository.
+// Fill in your own values below, then upload.
+//
+// This file ships with placeholders so the sketch compiles out of the box in
+// the Arduino IDE. It is a real source file, not a template: once you put your
+// own credentials in it, they are in your working copy - so do not commit or
+// share this file with the real values in place.
 
 #define WIFI_SSID       "your-field-hotspot"
 #define WIFI_PASSWORD   "your-password"

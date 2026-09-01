@@ -30,54 +30,93 @@ blower** - the flyback diode and bulk capacitor are not optional.
 ## Repository layout
 
 ```
-firmware/main_controller/   ESP32 DevKit: control, power, IoT, logging
-firmware/cam_node/          ESP32-CAM: vision and classification
-test/host/                  workstation test suite for the algorithmic code
-tools/analyze_trial.py      turns a trial log into the success-criteria numbers
-docs/                       wiring, power budget, protocols, testing plan
+arduino/PestTrapController/  sketch 1 - ESP32 DevKit: control, power, IoT, logging
+arduino/PestTrapCamera/      sketch 2 - ESP32-CAM: vision and classification
+test/host/                   workstation test suite for the algorithmic code
+tools/analyze_trial.py       turns a trial log into the success-criteria numbers
+docs/                        wiring, power budget, protocols, testing plan
 ```
+
+Both are ordinary Arduino IDE sketches: open the `.ino` and the rest of the
+files appear as tabs. Each folder also carries a `platformio.ini`, so the same
+files build under PlatformIO if you prefer it; the Arduino IDE ignores that
+file. There is only one copy of the source either way.
 
 The two boards map onto the study's conceptual framework like this:
 
 | Subsystem in the framework | Where it lives |
 |---|---|
 | Power supply | `power.cpp` (PV + SLA monitoring, state of charge) |
-| Sensing and detection | `cam_node/detector.cpp`, `sensors.cpp` |
+| Sensing and detection | `PestTrapCamera/detector.cpp`, `sensors.cpp` |
 | Processing and communication | `trap.cpp`, `telemetry.cpp`, `webui.cpp` |
 | Pest removal | `actuators.cpp` (UV array + blower) |
 
-## Quick start
+Each sketch's `.ino` only calls into `app.cpp`. That is deliberate: the Arduino
+IDE generates function prototypes at file scope for anything in the `.ino`, and
+gets it wrong for the namespaced functions this project uses throughout.
 
-1. **Install PlatformIO** (`pip install platformio`), or use the Arduino IDE
-   with the ESP32 board package.
+## Quick start (Arduino IDE)
 
-2. **Set your credentials:**
+**1. Install ESP32 board support.** File > Preferences > *Additional boards
+manager URLs*:
 
-   ```bash
-   cd firmware/main_controller/src
-   cp secrets.example.h secrets.h        # secrets.h is gitignored
-   $EDITOR secrets.h                     # Wi-Fi + MQTT broker
-   ```
+```
+https://espressif.github.io/arduino-esp32/package_esp32_index.json
+```
 
-3. **Flash the controller:**
+Then Tools > Board > Boards Manager, search **esp32**, install *esp32 by
+Espressif Systems*.
 
-   ```bash
-   cd firmware/main_controller && pio run -t upload && pio device monitor
-   ```
+**2. Install the libraries** the controller needs (Tools > Manage Libraries):
 
-4. **Flash the camera node** (disconnect the GPIO13/14 link wires first, and
-   pull GPIO0 to GND to enter the bootloader):
+| Library | Author | Note |
+|---|---|---|
+| PubSubClient | Nick O'Leary | MQTT |
+| ArduinoJson | Benoit Blanchon | **version 7.x** |
+| DHT sensor library | Adafruit | |
+| Adafruit Unified Sensor | Adafruit | pulled in by the DHT library |
 
-   ```bash
-   cd firmware/cam_node && pio run -t upload
-   ```
+The camera sketch needs no extra libraries; its driver ships with the board
+package.
 
-5. **Open the dashboard.** The controller prints its IP on boot. With no field
-   Wi-Fi it raises its own hotspot, `PestTrap-trap-01`, and serves the same
-   page at `http://192.168.4.1/`, including a CSV download of the trial log.
+**3. Upload the controller.** Open `arduino/PestTrapController/PestTrapController.ino`.
+Fill in the **secrets.h** tab with your Wi-Fi and MQTT details, then:
 
-6. **Calibrate before trusting any data** - see
-   [`docs/TESTING_PROTOCOL.md`](docs/TESTING_PROTOCOL.md) sections 1-4.
+| Setting | Value |
+|---|---|
+| Board | ESP32 Dev Module |
+| Partition Scheme | Default 4MB with spiffs (1.2MB APP/1.5MB SPIFFS) |
+| Upload Speed | 921600 |
+
+**4. Upload the camera node.** Open `arduino/PestTrapCamera/PestTrapCamera.ino`.
+
+| Setting | Value |
+|---|---|
+| Board | AI Thinker ESP32-CAM |
+| Partition Scheme | **Huge APP (3MB No OTA/1MB SPIFFS)** - required, it will not fit otherwise |
+| PSRAM | Enabled |
+
+The ESP32-CAM has no USB. To flash it:
+
+1. Disconnect the two link wires on GPIO13 and GPIO14.
+2. Wire an FTDI adapter: 5V, GND, U0T to RX, U0R to TX.
+3. Jumper GPIO0 to GND, press RESET, then Upload.
+4. Remove the jumper, press RESET, reconnect the link wires.
+
+**5. Open the dashboard.** The controller prints its IP on boot (Serial
+Monitor, 115200). With no field Wi-Fi it raises its own hotspot,
+`PestTrap-trap-01`, password `lactuca2026`, and serves the same page at
+`http://192.168.4.1/` including a CSV download of the trial log.
+
+**6. Calibrate before trusting any data** - see
+[`docs/TESTING_PROTOCOL.md`](docs/TESTING_PROTOCOL.md) sections 1-4.
+
+### If you would rather use PlatformIO
+
+```bash
+cd arduino/PestTrapController && pio run -t upload && pio device monitor
+cd arduino/PestTrapCamera     && pio run -t upload
+```
 
 ## How it operates
 
@@ -156,9 +195,9 @@ lone speck, a fast mover, an oversized object, and a global lighting change.
   the *camera rejected*; the blower captures whatever is in the suction cone
   regardless. Only the physical chamber audit measures selectivity. Report them
   separately.
-* **Detection thresholds are geometry-dependent.** The blob areas in
-  `cam_node/src/config.h` are meaningless until calibrated at your actual
-  camera-to-intake distance.
+* **Detection thresholds are geometry-dependent.** The blob areas in the
+  camera sketch's `config.h` tab are meaningless until calibrated at your
+  actual camera-to-intake distance.
 * **Run a control plot and a UV-only night.** Without them, "attracted" and
   "removed" cannot be separated in the results.
 

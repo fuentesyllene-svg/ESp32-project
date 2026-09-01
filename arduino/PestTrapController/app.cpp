@@ -10,6 +10,8 @@
 //   processing/comms    -> this file, trap.cpp, telemetry.cpp, webui.cpp
 //   pest removal        -> actuators.cpp    (UV-A array + centrifugal blower)
 // -----------------------------------------------------------------------------
+#include "app.h"
+
 #include <Arduino.h>
 #include <WiFi.h>
 #include <time.h>
@@ -315,6 +317,8 @@ void recordTelemetry() {
 
 }  // namespace
 
+namespace app {
+
 void setup() {
   Serial.begin(115200);
   delay(300);
@@ -388,3 +392,5 @@ void loop() {
 
   delay(10);
 }
+
+}  // namespace app

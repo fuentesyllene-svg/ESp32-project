@@ -11,6 +11,8 @@
 // Flashing: disconnect the two link wires (GPIO13/14 are free, but the USB
 // programmer needs the board's own U0TXD/U0RXD and GPIO0 pulled low).
 // -----------------------------------------------------------------------------
+#include "app.h"
+
 #include <Arduino.h>
 #include <esp_task_wdt.h>
 
@@ -113,6 +115,8 @@ void serveBlobs() {
 
 }  // namespace
 
+namespace app {
+
 void setup() {
   // The link shares no pins with U0, so the USB console stays usable for
   // debugging while the sentence link runs on UART1.
@@ -197,3 +201,5 @@ void loop() {
   // draw down, which matters on a 9 Ah battery running all night.
   delay(150);
 }
+
+}  // namespace app

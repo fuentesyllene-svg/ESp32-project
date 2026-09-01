@@ -4,8 +4,8 @@
 CXX      ?= g++
 CXXFLAGS ?= -std=c++17 -O1 -g -Wall -Wextra -Wno-unused-parameter
 
-MAIN_SRC = ../../firmware/main_controller/src
-CAM_SRC  = ../../firmware/cam_node/src
+MAIN_SRC = ../../arduino/PestTrapController
+CAM_SRC  = ../../arduino/PestTrapCamera
 
 INCLUDES = -Ishim -I$(MAIN_SRC) -I$(CAM_SRC)
 

@@ -20,7 +20,7 @@ for a different UV array or blower.
 Buck converter efficiency is taken as 85 %, which is typical for a 6-24 V to
 5 V 3 A module at a ~0.3 A output. Substitute your own measurements: the
 firmware constants are `LOAD_A_BASE`, `LOAD_A_UV` and `LOAD_A_FAN` in
-`firmware/main_controller/src/config.h`, and they feed both this budget and
+`arduino/PestTrapController/config.h`, and they feed both this budget and
 the IR compensation in the state-of-charge estimate.
 
 ## 2. Night (18:00-05:00, 11 hours)
