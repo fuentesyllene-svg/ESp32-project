@@ -1,0 +1,19 @@
+# PlatformIO
+.pio/
+.pioenvs/
+.piolibdeps/
+.vscode/
+*.bin
+*.elf
+
+# Local credentials -- never commit these
+firmware/main_controller/src/secrets.h
+firmware/cam_node/src/secrets.h
+
+# Field data
+data/trials/*.csv
+__pycache__/
+*.pyc
+
+# Host test binary
+test/host/host_tests
