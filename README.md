@@ -67,17 +67,43 @@ https://espressif.github.io/arduino-esp32/package_esp32_index.json
 Then Tools > Board > Boards Manager, search **esp32**, install *esp32 by
 Espressif Systems*.
 
-**2. Install the libraries** the controller needs (Tools > Manage Libraries):
+**2. Install the libraries** the controller needs. The Library Manager is the
+books icon in the left sidebar of IDE 2.x, or `Sketch > Include Library >
+Manage Libraries...` in either version (Ctrl+Shift+I).
 
-| Library | Author | Note |
+Search for exactly the text in the first column - the author confirms you have
+the right one, because several libraries share similar names:
+
+| Search for | Author | Note |
 |---|---|---|
-| PubSubClient | Nick O'Leary | MQTT |
-| ArduinoJson | Benoit Blanchon | **version 7.x** |
-| DHT sensor library | Adafruit | |
-| Adafruit Unified Sensor | Adafruit | pulled in by the DHT library |
+| `PubSubClient` | Nick O'Leary | MQTT |
+| `ArduinoJson` | Benoit Blanchon | choose **7.x** in the version dropdown |
+| `DHT sensor library` | Adafruit | answer *yes* to "install all dependencies" |
+| `Adafruit Unified Sensor` | Adafruit | the DHT library usually pulls this in |
+
+Searching `ArduinoJson v7` returns nothing - drop the `v7`, the version is a
+dropdown on the result. Searching `DHT22` returns a pile of unrelated
+libraries; the one you want is called *DHT sensor library*.
 
 The camera sketch needs no extra libraries; its driver ships with the board
 package.
+
+**If the Library Manager shows no results for anything**, the library index
+failed to download (often a firewall or a proxy). Install from ZIP instead:
+download each repository from GitHub with *Code > Download ZIP*, then
+`Sketch > Include Library > Add .ZIP Library...`
+
+* `github.com/knolleary/pubsubclient`
+* `github.com/bblanchon/ArduinoJson`
+* `github.com/adafruit/DHT-sensor-library`
+* `github.com/adafruit/Adafruit_Sensor`
+
+Or, if you have `arduino-cli` available:
+
+```bash
+arduino-cli lib install "PubSubClient" "ArduinoJson" \
+                        "DHT sensor library" "Adafruit Unified Sensor"
+```
 
 **3. Upload the controller.** Open `arduino/PestTrapController/PestTrapController.ino`.
 Fill in the **secrets.h** tab with your Wi-Fi and MQTT details, then:
